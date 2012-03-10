@@ -1,0 +1,14 @@
+#### PhotoZ
+
+A repository for Hogg's thoughts about redshift estimation.  It is
+called PhotoZ, but of course everything applies to spectroscopic data
+too; images and spectra are both composed of integrals of the
+intensity field.
+
+## Author
+
+David W. Hogg, New York University, <http://cosmo.nyu.edu/hogg/>
+
+## License
+
+Copyright 2012 David W. Hogg (NYU).  All rights reserved.
