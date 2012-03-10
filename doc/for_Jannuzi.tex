@@ -1,6 +1,124 @@
 \documentclass[12pt]{article}
+
+\newcommand{\given}{\,|\,}
+\newcommand{\dd}{\mathrm d}
+
 \begin{document}
 
-Hello World!
+\paragraph{To Buell from Hogg:}
+On consideration, the problem you have is \emph{very} simple, at least
+to formulate
+
+Imagine that you have a sample of $M$ galaxies $m$ that constitute
+some kind of complete sample in a sky region of solid angle $\Omega$.
+You want to use these galaxies to make an estimate of some kind of
+integral that looks like
+\begin{eqnarray}\displaystyle
+Q &=& \int q(z)\,\frac{\dd N}{\dd \Omega\,\dd z}\,\dd z
+\quad ,
+\end{eqnarray}
+where $q(z)$ is some function (perhaps clustering-related), $N$ is
+galaxy number, $\Omega$ is solid angle, and $z$ is redshift.  Imagine
+that for each galaxy $m$ you have taken data $D_m$, which is a set of
+photometry and possibly also other information, including perhaps
+morphology (or even spectroscopy, but for now we will assume not).
+Each $D_m$ is a multi-dimensional vector or list of measurements, for
+which you also have a blob of uncertainty information $I_m$ (this
+includes a noise model or uncertainty estimates).
+
+If you have a standard photometric-redshift scheme, it can return for
+you, for each galaxy $m$, what is called a likelihood $p(D_m \given
+z_m,\alpha_m,I_m)$.  This is the probability of the data $D_m$ given a
+hypothesized redshift $z_m$, and some nuisance parameters (maybe SED
+or SFH parameters) $\alpha_m$ (also a vector or list or blob).  In a
+standard kind of analysis, the likelihood is related to some kind of
+chi-squared by
+\begin{eqnarray}
+ln p(D_m \given z_m, \alpha_m, I_m) &=& -\frac{1}{2}\,\chi^2
+\quad,
+\end{eqnarray}
+where $\chi^2$ is the inverse-variance weighted total square residual
+of the model (at redshift $z_m$ and given SED parameters $\alpha_m$);
+it is a function of the data, the model parameters, and the
+uncertainty information.
+
+If you are a Bayesian, you have more than that, because you have some
+prior $p(\alpha \given z)$ over the SED parameters $\alpha$ (at least)
+at any redshift $z$, and a prior over redshifts $z$.  With these, you
+can do things like
+\begin{eqnarray}
+p(D_m \given z_m, I_m) &=& \int p(D_m \given z_m, \alpha_m, I_m)\,\dd \alpha_m
+\\
+p(z_m \given D_m, I_m) &=& \frac{1}{Z_m}\,p(D_m \given z_m, I_m)\,p(z_m)
+\\
+Z_m &\equiv& \int p(D_m \given z_m, I_m)\,p(z_m)\,\dd z_m
+\quad ,
+\end{eqnarray}
+where the first is the marginalized likelihood (we got rid of
+$\alpha_m$ by integrating), the second is the marginalized posterior
+PDF for $z_m$ (we obtained by Bayes's rule), and the third is a
+normalization constant necessary to make the posterior PDF correct.
+
+Let's now assume that the $M$ galaxies have been non-trivially
+selected by a method called ``$H$'' on the same data $D_m$ that were
+used to perform the photometric redshift estimation.  Indeed, maybe
+$H$ is the method that the $M$ galaxies were selected \emph{to have
+  best-fit photometric redshifts in some bin}.  No problem; there is
+still just some (possibly complicated) relationship between the data
+$D_m$ on any galaxy $m$ and its inclusion in the sample by method $H$.
+At the risk of being annoying, we could write that function as a kind
+of prior over the data: All the selection information (and its
+relationship to the real world of actual measured galaxies) can be encoded in
+some kind of terrifically complicated prior PDF $p(D, I \given H)$
+that gives the probability of having data $D$ and uncertainties $I$ on
+a galaxy if that galaxy was selected by method $H$.  That all sounds
+horrible, until you realize that the \emph{data you actually have}
+(the set of $M$ instances of $D_m, I_m$) constitute a \emph{fair
+  sampling of the function} $p(D, I \given H)$.  After all you
+selected galaxies by $H$ and got the data you got by that selection!
+This fact is trivial, annoying, and so on, but it makes life very
+simple going forward.  Here's why:
+\begin{eqnarray}\displaystyle
+p(z \given H) = \int p(z_m \given D_m, I_m)\,p(D_m, I_m \given H)\,\dd D_m
+\\
+p(z \given H) \approx \frac{1}{M} \sum_{m=1}^M p(z_m \given D_m, I_m)
+\quad ,
+\end{eqnarray}
+where we write down an impossibly insane integral and then trivially
+approximate it with the sampling we actually have.  This PDF $p(z
+\given H)$ is a sampling estimate of the true redshift distribution of
+galaxies that were selected in your particular sample by method $H$.
+
+With all that in place, a good estimator for the original integral $Q$ is
+\begin{eqnarray}\displaystyle
+Q \approx \int q(z)\,\frac{M}{\Omega}\,p(z \given H)\,\dd z
+\quad ;
+\end{eqnarray}
+the punchline is: Average the marginalized posterior PDFs for the
+redshifts $z_m$ given the data, and use that for the non-trivial
+redshift distribution for the non-trivially selected sample.
+
+Now, imagine you \emph{aren't} a Bayesian, or \emph{don't trust your
+  priors.}  The only suggestion I have is to take the small amount of
+spectroscopic data you have to estimate a fraction of large outliers,
+and their distribution in redshift.  Then make an approximation for
+$p(z \given H)$ that involves normalizing the the individual object
+likelihoods, averaging them together, adding in the outlier
+population, and then re-normalizing again.  That's at least better
+than ignoring those outliers!  By the way, if you go the Bayesian
+route, it should show you that you expect outliers.  That is, if you
+put down a sensible prior on the SED parameters $\alpha_m$, you should
+find that when you marginalize them out, you get a marginalized
+likelihood and a posterior PDF that permits large redshift excursions.
+
+There is an instructive limiting case too: Imagine that your
+likelihood is so decisive that you have essentially perfect redshift
+information on every object.  It is nice that in this situation, the
+best estimate you have for $p(z \given H)$ is just the mixture of
+delta functions and then the (approximate) integral for $Q$ becomes
+\begin{eqnarray}\displaystyle
+Q &\approx& \frac{1}{\Omega} \sum_{m=1}^M q(z_m)
+\quad ,
+\end{eqnarray}
 
 \end{document}
