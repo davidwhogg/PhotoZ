@@ -6,6 +6,12 @@
 \begin{document}
 
 \paragraph{To Abade from Hogg:}
+There are two projects.  In the first, we try to use exceedingly bad
+spectra to improve redshift estimates.  In the second, we infer the
+redshift distribution of very faint galaxies using everything we have
+got.
+
+\paragraph{generalities:}
 Imagine that you have a sample of $M$ galaxies $m$, for each of which
 you have taken data $D_m$, which is a set of photometry and possibly
 also other information, including perhaps morphology, or even
@@ -23,41 +29,59 @@ blob $D_n$ (and each associated $I_n$) is different for every object.
 I think this is a pure implementation detail; I will try to make sure
 everything (below) works either way.
 
-There are two projects.  In the first, we try to use exceedingly bad
-spectra to improve redshift estimates.  In the second, we infer the
-redshift distribution of very faint galaxies using everything we have
-got.
-
 If you have a standard photometric-redshift scheme, it can return for
 you, for each galaxy $m$, what is called a likelihood $p(D_m \given
 z_m,\alpha_m,I_m)$.  This is the probability of the data $D_m$ given a
-hypothesized redshift $z_m$, and some nuisance parameters (maybe SED
-In a standard kind of analysis, the likelihood is related to some kind
-of chi-squared by
+hypothesized redshift $z_m$, and a list or vector or blob of nuisance
+parameters $\alpha_m$ describing the SED or the SFH and dust
+properties that set the emitted spectrum of the galaxy.  In a standard
+kind of analysis, the likelihood is related to some kind of
+chi-squared by
 \begin{eqnarray}
-\ln p(D_m \given z_m, \alpha_m, I_m) &=& -\frac{1}{2}\,\chi^2
+\ln p(D_m \given z_m, \alpha_m, I_m) &=& C-\frac{1}{2}\,\chi^2
 \quad,
 \end{eqnarray}
-where $\chi^2$ is the inverse-variance weighted total square residual
-of the model (at redshift $z_m$ and given SED parameters $\alpha_m$);
-it is a function of the data, the model parameters, and the
-uncertainty information.
+where $C$ is some constant and $\chi^2$ is the inverse-variance
+weighted total square residual of the model (at redshift $z_m$ and
+given SED parameters $\alpha_m$); it is a function of the data, the
+model parameters, and the uncertainty information.
 
-If you are a Bayesian, you have more than that, because you have some
-prior $p(\alpha \given z)$ over the SED parameters $\alpha$ (at least)
-at any redshift $z$, and a prior over redshifts $z$.  With these, you
-can do things like
+\paragraph{making use of bad spectra}
+
+
+\paragraph{inferring the redshift distribution}
+Imagine your sample of $M$ galaxies is taken from a well-defined set
+of faint galaxies for which you would like to know the redshift
+distribution.  Imagine that you have very heterogeneous information; a
+few have precise spectroscopic redshifts, some have relatively precise
+photometric redshifts, and some could be at any of a wide range of
+redshifts.
+
+Let's choose some flexible parameterized (or non-parametric, meaning
+having many, many parameters) form for the redshift distribution $p(z
+\given \theta)$, where $\theta$ is the vector or list of parameters,
+possibly large.  Unfortunately, we aren't going to be able to proceed
+in a principled manner if we don't \emph{also} choose a parameterized
+form for the distribution of SED parameters as a function of redshift
+$p(\alpha \given z, \beta)$, where $\beta$ is the blob of parameters
+of the conditional distribution of SED parameters.
+
+The way inference proceeds in this case is by treating these
+distribution functions as \emph{prior PDFs} on the parameters for the
+individual galaxies, but then learning them in the usual way but on
+the \emph{whole collecton of galaxies}.  In that inference, the
+individual galaxy parameters will be nuisance parameters.  For each
+individual object, the posterior probability looks like
 \begin{eqnarray}
-p(D_m \given z_m, I_m) &=& \int p(D_m \given z_m, \alpha_m, I_m)\,\dd \alpha_m
-\\
-p(z_m \given D_m, I_m) &=& \frac{1}{Z_m}\,p(D_m \given z_m, I_m)\,p(z_m)
-\\
-Z_m &\equiv& \int p(D_m \given z_m, I_m)\,p(z_m)\,\dd z_m
+p(z_m, \alpha_m \given D_m, I_m, \theta, \beta) &=&
+  \frac{1}{Z_m}\,p(D_m \given z_m, \alpha_m, I_m)
+  \,p(z_m \given \theta)\,p(\alpha_m \given z_m, \beta)
 \quad ,
 \end{eqnarray}
-where the first is the marginalized likelihood (we got rid of
-$\alpha_m$ by integrating), the second is the marginalized posterior
-PDF for $z_m$ (we obtained by Bayes's rule), and the third is a
-normalization constant necessary to make the posterior PDF correct.
+where $Z_m$ is a normalization factor....DWH?
+
+Compute full marginalized likelihood....
+
+Comment on informative objects....
 
 \end{document}
