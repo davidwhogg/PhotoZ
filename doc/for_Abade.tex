@@ -6,7 +6,7 @@
 \begin{document}
 
 \paragraph{To Abade from Hogg:}
-There are two projects.  In the first, we try to use exceedingly bad
+We discussed two projects.  In the first, we try to use exceedingly bad
 spectra to improve redshift estimates.  In the second, we infer the
 redshift distribution of very faint galaxies using everything we have
 got.
@@ -26,8 +26,8 @@ put an entry in $D_m$ for every measurement you \emph{could} have, but
 then put zeros into the inverse variance $1/\sigma^2$ entries in $I_m$
 for the measurements you don't, in fact, have.  In the other, each
 blob $D_n$ (and each associated $I_n$) is different for every object.
-I think this is a pure implementation detail; I will try to make sure
-everything (below) works either way.
+I think this is a pure implementation detail; everything (below) works
+either way.
 
 If you have a standard photometric-redshift scheme, it can return for
 you, for each galaxy $m$, what is called a likelihood $p(D_m \given
@@ -35,19 +35,52 @@ z_m,\alpha_m,I_m)$.  This is the probability of the data $D_m$ given a
 hypothesized redshift $z_m$, and a list or vector or blob of nuisance
 parameters $\alpha_m$ describing the SED or the SFH and dust
 properties that set the emitted spectrum of the galaxy.  In a standard
-kind of analysis, the likelihood is related to some kind of
-chi-squared by
-\begin{eqnarray}
+kind of analysis---where the uncertainties are Gaussian---the
+likelihood is related to some kind of chi-squared by
+\begin{eqnarray}\displaystyle
 \ln p(D_m \given z_m, \alpha_m, I_m) &=& C-\frac{1}{2}\,\chi^2
+\\
+\chi^2 &\equiv& \sum_{n=1}^{N_m} \frac{[D_{mn}-\tilde{D}_{mn}]^2}{\sigma_{mn}^2}
 \quad,
 \end{eqnarray}
 where $C$ is some constant and $\chi^2$ is the inverse-variance
 weighted total square residual of the model (at redshift $z_m$ and
-given SED parameters $\alpha_m$); it is a function of the data, the
-model parameters, and the uncertainty information.
+given SED parameters $\alpha_m$), we have assumed that the data blob
+$D_m$ has $N_m$ components $D_{mn}$ each of which has uncertainty
+variance $\sigma_{mn}^2$ and predicted (expected) value
+$\tilde{D}_{mn}$ at parameters $(z_m, \alpha_m)$.  That is, the
+residuals, $\chi^2$, and the likelihood are all functions of the data,
+the model parameters, and the uncertainty information.
+
+If a particular data point $D_{mn}$ in the data blob $D_m$ is a
+photometric measurement in some bandpass (filter curve) $R(\lambda)$
+then the predicted photometric measurement $\tilde{D}_{mn}$ is
+obtained by some kind of integral that looks like
+\begin{eqnarray}\displaystyle
+\tilde{D}_{mn} &=& \int \frac{L_{\lambda}(\frac{\lambda}{[1+z_m]})}{4\pi\,D_L^2(z_m)}\,R(\lambda)\,\frac{\lambda\,\dd\lambda}{[1+z_m]}
+\quad ,
+\end{eqnarray}
+where $L_{\lambda}(\lambda)$ is a medium-resolution or high-resolution
+luminosity density description that is implicitly a function of the
+SED parameters $\alpha_m$, $D_L(z_m)$ is the luminosity distance to
+redshift $z_m$, and the integral is $\lambda\,\dd\lambda$ for reasons
+given elsewhere (arXiv:astro-ph/0210394).
 
 \paragraph{making use of bad spectra}
+In at faint levels or when photometry is low in signal-to-noise or at
+certain redshifts or for certain objects, the uncertainties on the
+photometric redshifts can be very large.  That statement (``large
+uncertainty'') translates to a statement about the likelihood function
+$p(D_m \given z_m, \alpha_m, I_m)$; it says that it has substantial
+support over a wide range of $z_m$.  This does not usually mean that
+the data are uninformative, it just means that they don't say much
+about the redshift alone.
 
+...covariance...
+
+...implicit predictions...emission lines...
+
+...testing with \textsl{SDSS} imaging and spectra noisified...
 
 \paragraph{inferring the redshift distribution}
 Imagine your sample of $M$ galaxies is taken from a well-defined set
@@ -72,7 +105,7 @@ individual galaxies, but then learning them in the usual way but on
 the \emph{whole collecton of galaxies}.  In that inference, the
 individual galaxy parameters will be nuisance parameters.  For each
 individual object, the posterior probability looks like
-\begin{eqnarray}
+\begin{eqnarray}\displaystyle
 p(z_m, \alpha_m \given D_m, I_m, \theta, \beta) &=&
   \frac{1}{Z_m}\,p(D_m \given z_m, \alpha_m, I_m)
   \,p(z_m \given \theta)\,p(\alpha_m \given z_m, \beta)
