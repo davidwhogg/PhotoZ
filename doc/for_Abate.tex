@@ -1,3 +1,10 @@
+% Copyright 2012 David W. Hogg (NYU).
+% All rights reserved.
+
+% to-do
+% -----
+% - Put in arXiv numbers.
+
 \documentclass[12pt]{article}
 
 \newcommand{\given}{\,|\,}
@@ -5,11 +12,12 @@
 
 \begin{document}
 
-\paragraph{To Abate from Hogg:}
-We discussed two projects.  In the first, we try to use exceedingly bad
-spectra to improve redshift estimates.  In the second, we infer the
-redshift distribution of very faint galaxies using everything we have
-got.
+\paragraph{To Abate from Hogg:\\
+The redshift distribution of the faintest objects observed by LSST}
+We discussed two projects.  In the first, we try to use exceedingly
+bad spectra to improve redshift estimates.  In the second, we infer
+the redshift distribution of very faint galaxies using everything we
+have got.
 
 \paragraph{generalities:}
 Imagine that you have a sample of $M$ galaxies $m$, for each of which
@@ -76,11 +84,44 @@ support over a wide range of $z_m$.  This does not usually mean that
 the data are uninformative, it just means that they don't say much
 about the redshift alone.
 
-...covariance...
+However, typically, because some photometric measurements are precise,
+those measurements pin the galaxy to a narrow locus in the
+$(z_m,\alpha_m)$ hypervolume.  Different SED shapes $\alpha_m$ have
+different implications for observed-band colors at different
+redshifts.  But \emph{also} different $\alpha_m$ correspond to
+different predictions high-resolution (or typical-resolution)
+spectroscopy.  That is, at some possible redshifts $z_m$, object $m$
+would have to be (given its photometry) an old galaxy, while at others
+it would have to be strongly star forming.  That makes predictions for
+spectroscopy, of course.  In one case there is a prediction that there
+will be no emission lines; in the other there will be, for example,
+strong [O\,II] emission in some small, predictable range of
+observed-frame wavelengths.
 
-...implicit predictions...emission lines...
+In principle, even a spectrum that would not provide a confident
+redshift estimate (for example a spectrum that would only detect a
+single, low significance line and no significant continuum) could
+distinguish these scenarios.  That is especially true because the
+predictions will be very specific about line ratios and observed-frame
+locations.  Even a spectrum that detects no lines and no continuum
+could be very informative, as it could rule out many star-forming
+hypotheses.  And so on.  A related project---where we use
+non-detections to make redshift inferences---is our paper on quasar
+redshift prediction (arXiv:XXX)
 
-...testing with \textsl{SDSS} imaging and spectra noisified...
+One nice thing about the implied project is that it is extremely easy
+to test with existing data, at least in principle.  For example,
+photometric redshifts can be estimated in SDSS imaging data, and
+tested with SDSS (or other) spectra.  The tests can be performed by
+``noisifying'' the photometric data (to make the photometric redshifts
+uncertain) and noisifying the spectroscopic data (to make the continua
+hard to measure and the lines of low significance.
+
+Another nice thing is that it is possible to objectively identify the
+best objects for spectroscopic follow-up, in the sense that it will be
+possible to estimate in advance, given the likelihood, what range of
+$z_m$ could be ruled out with a spectrum in a particular wavelength
+range with particular resolution and signal-to-noise.
 
 \paragraph{inferring the redshift distribution}
 Imagine your sample of $M$ galaxies is taken from a well-defined set
@@ -111,10 +152,57 @@ p(z_m, \alpha_m \given D_m, I_m, \theta, \beta) &=&
   \,p(z_m \given \theta)\,p(\alpha_m \given z_m, \beta)
 \quad ,
 \end{eqnarray}
-where $Z_m$ is a normalization factor....DWH?
+where $Z_m$ is a normalization factor.  But instead of making this
+posterior probability, we can also make likelihoods for the
+hyperparameters $\theta$ and $\beta$ with the individual-galaxy
+redshift assignments (and SED inferences) marginalized out:
+\begin{eqnarray}\displaystyle
+p(D_m \given I_m, \theta, \beta) &=&
+  \int p(D_m \given z_m, \alpha_m, I_m)
+  \,p(z_m \given \theta)\,p(\alpha_m \given z_m, \beta)\,\dd z_m\,\dd\alpha_m
+\quad ,
+\end{eqnarray}
+where implicitly the integral goes over the full domain of $z_m$ and
+the multi-dimensional domain of $\alpha_m$.  This \emph{partially
+  marginalized likelihood} is also a \emph{likelihood for the
+  hyperparameters}; it is a tool for inferring the parameters of the
+redshift and SED distributions.  Each marginalization integral can be
+done independently for each object $m$, and then (as long as the data
+are independently observed) these partially marginalized likelihoods
+can be multiplied to make the full-data likelihood for the
+hyperparameters
+\begin{eqnarray}\displaystyle
+p(D \given I, \theta, \beta) &=&
+  \prod_{m=1}^M p(D_m \given I_m, \theta, \beta)
+\\
+D &\equiv& \left\{D_m\right\}_{m=1}^M
+\\
+I &\equiv& \left\{I_m\right\}_{m=1}^M
+\quad ,
+\end{eqnarray}
+where $D$ is the full set of all data, and $I$ the full set of all
+prior information.  Inference can proceed by maximizing this total
+partially marginalized likelihood, or by placing a prior PDF on the
+hyperparameters themselves and making a posterior PDF for them.  An
+example of this kind of inference is our paper on exoplanet
+eccentricities (arXiv:XXX)
 
-Compute full marginalized likelihood....
+One nice thing about this approach is that there is no requirement
+that all $D_m$ be qualitatively similar; some objects might have
+many-band data, some might have only a few measurements; some objects
+might have spectroscopy, most won't; non-detections in the UV for some
+objects can be very informative; and so on.  Another interesting
+aspect of all this is that some particular objects---and you never
+know which ones in advance---will be \emph{far more informative} about
+the redshift distribution $p(z \given \theta)$ than others.  These
+sources can be identified by looking at the dependences of the
+inference on the sample; once they have been identified, they mark
+themselves for further follow-up.
 
-Comment on informative objects....
+Along the same lines, once the hyperparameters have been inferred, the
+model will make strong predictions for some objects, in the form of
+very narrow posterior PDFs for particular object redshifts $z_m$.
+Those objects provide excellent opportunities for confirming or
+testing the model.
 
 \end{document}

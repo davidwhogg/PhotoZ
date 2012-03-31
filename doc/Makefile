@@ -1,4 +1,4 @@
-all: for_Jannuzi.pdf for_Abade.pdf
+all: for_Jannuzi.pdf for_Abate.pdf
 
 %.pdf: %.tex
 	pdflatex $<
