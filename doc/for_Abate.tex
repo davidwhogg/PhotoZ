@@ -1,10 +1,6 @@
 % Copyright 2012 David W. Hogg (NYU).
 % All rights reserved.
 
-% to-do
-% -----
-% - Put in arXiv numbers.
-
 \documentclass[12pt]{article}
 
 \newcommand{\given}{\,|\,}
@@ -74,7 +70,7 @@ SED parameters $\alpha_m$, $D_L(z_m)$ is the luminosity distance to
 redshift $z_m$, and the integral is $\lambda\,\dd\lambda$ for reasons
 given elsewhere (arXiv:astro-ph/0210394).
 
-\paragraph{making use of bad spectra}
+\paragraph{making use of bad spectra:}
 In at faint levels or when photometry is low in signal-to-noise or at
 certain redshifts or for certain objects, the uncertainties on the
 photometric redshifts can be very large.  That statement (``large
@@ -107,7 +103,7 @@ locations.  Even a spectrum that detects no lines and no continuum
 could be very informative, as it could rule out many star-forming
 hypotheses.  And so on.  A related project---where we use
 non-detections to make redshift inferences---is our paper on quasar
-redshift prediction (arXiv:XXX)
+redshift prediction (arXiv:1105.3975).
 
 One nice thing about the implied project is that it is extremely easy
 to test with existing data, at least in principle.  For example,
@@ -123,7 +119,12 @@ possible to estimate in advance, given the likelihood, what range of
 $z_m$ could be ruled out with a spectrum in a particular wavelength
 range with particular resolution and signal-to-noise.
 
-\paragraph{inferring the redshift distribution}
+I have only talked so far about the likelihood; if you really want to
+make probabilistic predictions for the spectroscopy, you want to
+sample from the posterior PDF for the redshift and SED.  That requires
+priors and Bayes's rule.  More on that below.
+
+\paragraph{inferring the redshift distribution:}
 Imagine your sample of $M$ galaxies is taken from a well-defined set
 of faint galaxies for which you would like to know the redshift
 distribution.  Imagine that you have very heterogeneous information; a
@@ -185,7 +186,7 @@ prior information.  Inference can proceed by maximizing this total
 partially marginalized likelihood, or by placing a prior PDF on the
 hyperparameters themselves and making a posterior PDF for them.  An
 example of this kind of inference is our paper on exoplanet
-eccentricities (arXiv:XXX)
+eccentricities (arXiv:1008.4146).
 
 One nice thing about this approach is that there is no requirement
 that all $D_m$ be qualitatively similar; some objects might have
