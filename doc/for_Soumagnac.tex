@@ -111,7 +111,7 @@ for galaxy $i$, the normalization factor $Z_i(\beta)$ is really a
 marginalized probability of getting the data $f_i$ given the model and
 the hyper\-parameters:
 \begin{eqnarray}\displaystyle
-P(f_i \given \beta, I) &=&
+p(f_i \given \beta, I) &=&
   \sum_z\sum_t p(f_i \given z, t, I)\,P(z, t \given \beta)
 \quad ,
 \end{eqnarray}
@@ -122,8 +122,8 @@ $f_i$, and if each galaxy is an independent observation (has an
 independent noise draw), then there is a \emph{full-data marginalized
   likelihood}
 \begin{eqnarray}\displaystyle
-P(D \given \beta, I) &=&
-  \prod_{i=1}^N P(f_i \given \beta, I)
+p(D \given \beta, I) &=&
+  \prod_{i=1}^N p(f_i \given \beta, I)
 \quad ;
 \end{eqnarray}
 this is a product not a sum.  In the absence of a prior PDF on the
