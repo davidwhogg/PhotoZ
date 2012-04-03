@@ -1,0 +1,144 @@
+% Copyright 2012 David W. Hogg (NYU).
+% All rights reserved.
+
+\documentclass[12pt]{article}
+
+\newcommand{\etal}{\textit{et al.}}
+\newcommand{\ZEBRA}{\textsl{ZEBRA}}
+\newcommand{\given}{\,|\,}
+\newcommand{\dd}{\mathrm d}
+\newcommand{\new}{\mathrm new}
+
+\begin{document}
+
+\noindent\textsl{This document is a draft dated 2012-04-02.}
+
+\paragraph{To Soumagnac from Hogg:\\ Replacing the \ZEBRA\ data-driven prior PDF:}
+In an email conversation from 2011 October, we looked at equation~(6)
+in the \ZEBRA\ paper (Feldmann \etal, 2006, \textit{MNRAS},
+\textbf{372}, 565), in which they construct a prior PDF from the
+observed data.  The equation is very suspicious, although I don't
+doubt that the use of it improves performance over other heurisitic
+choices of prior PDF (like a ``flat prior'' or the like).  The issue
+is \emph{not} that it is impossible to take a prior PDF from the data;
+indeed one \emph{should} take one's prior PDF from the data!  The
+prior PDF should represent the information coming from prior data.
+The issue is that the correct way to take a prior PDF from the data
+involves probabilistic inference, not heuristics.
+
+I conjecture that \emph{if the \ZEBRA\ code is modified to infer its
+  prior hierarchically, performance will improve even further.}
+Details about how to perform this inference follow.
+
+Converting from the notation in the \ZEBRA\ paper to more standard
+probabilistic notation, the idea is that there is a discrete set of
+possible redshifts $z$ and galaxy templates $t$.  The \ZEBRA\ code can
+construct, for an object $i$, given observations $f_i$ (a vector or
+list or blob of photometric measurements) a likelihood $p(f_i \given
+z, t, I)$, which is a probability (per unit data) of getting data
+$f_i$ given redshift and template pair $(z, t)$, and other prior
+information $I$, which includes the all-important noise model and
+uncertainty variances ($\sigma_{fi}^2$).  The code can also construct
+a posterior PDF according to Bayes theorem
+\begin{eqnarray}\displaystyle
+P(z, t \given f_i, I) &=&
+  \frac{1}{Z_i}\,p(f_i \given z, t, I)\,P(z, t)
+\\
+Z_i &\equiv& \sum_z\sum_t p(f_i \given z, t, I)\,P(z, t)
+\quad ,
+\end{eqnarray}
+where $Z_i$ is a normalization factor and $P(z, t)$ is a
+prior PDF for the redshift and template.  The prior and posterior PDFs
+get capital $P$ function symbols because they represent discrete
+probabilities over a finite number of redshifts and templates.  This
+is all fine.
+
+The \ZEBRA\ paper constructs a better-than-flat prior PDF by iterating
+the following assignment to convergence:
+\begin{eqnarray}\displaystyle
+P_{\new}(z, t) &\leftarrow&
+  P(z, t)\,\frac{1}{N}
+  \,\sum_{i=1}^N \frac{1}{Z_i}\,p(f_i \given z, t, I)
+\quad ,
+\end{eqnarray}
+where the sum is over the $N$ galaxies $i$ for which there are
+observations.  Actually the sum is limited to only those galaxies with
+good redshift determinations (which is one of the red flags about the
+method).  This prior PDF update is iterated to convergence, along with
+a bit of smoothing in the $(z, t)$ space.  The \ZEBRA\ method works
+better with this iteratively constructed prior PDF than it does with
+any ``flat'' prior PDF, presumably because this prior puts weight on
+those redshifts and templates where the data have high likelihood;
+that is, the prior PDF prefers redshifts and templates that are likely
+in other data.  That's good!
+
+However, there are two (related) problems with this approach.  The
+first is that it involves summing (or averaging) probability
+distribution functions.  That is rarely a good idea.  The method also
+has serious dimensional problems if you take the limit that $z$ and
+$t$ go over to a continuous space.  The second problem is that the
+method has no fundamental justification in probability theory.  What
+would that look like?
+
+One way to think about the problem is to introduce
+\emph{hyperparameters}, or parameters that control the prior PDF.  The
+dumbest possible idea for hyper\-parameters is to introduce a list
+$\beta$ of discrete probabilities, one for every $(z, t)$ pair.
+That's not a good idea, because it can make for very non-smooth prior
+PDFs.  So it is better to think of something like this: For each
+template $t$ have some hyper\-parameters $\beta_t$ that set the
+probability of having template $t$, and, given that template, a prior
+PDF for the redshift \emph{given} that template.  In this model, the
+prior PDF looks like
+\begin{eqnarray}\displaystyle
+P(z, t \given \beta) = P(t \given \beta)\,P(z \given t, \beta_t)
+\quad,
+\end{eqnarray}
+where, implicitly, the hyper\-parameters $\beta_t$ are all lumped
+together into one huge blob $\beta$ of hyper\-parameters.
+
+With this new hyper\-parameterized prior PDF, the posterior PDF becomes
+\begin{eqnarray}\displaystyle
+P(z, t \given f_i, \beta, I) &=&
+  \frac{1}{Z_i(\beta)}\,p(f_i \given z, t, I)\,P(z, t \given \beta)
+\\
+Z_i(\beta) &\equiv& \sum_z\sum_t p(f_i \given z, t, I)\,P(z, t \given \beta)
+\quad .
+\end{eqnarray}
+Posterior PDFs aren't the only things you can construct with a prior
+PDF; you can also construct marginalized likelihoods.  For example,
+for galaxy $i$, the normalization factor $Z_i(\beta)$ is really a
+marginalized probability of getting the data $f_i$ given the model and
+the hyper\-parameters:
+\begin{eqnarray}\displaystyle
+P(f_i \given \beta, I) &=&
+  \sum_z\sum_t p(f_i \given z, t, I)\,P(z, t \given \beta)
+\quad ,
+\end{eqnarray}
+where I have done exactly what I did to get $Z_i(\beta)$ but just
+interpreted it probabilistically as a marginalization.  If I think
+about the \emph{full data set} $D$ as being the full list of all the
+$f_i$, and if each galaxy is an independent observation (has an
+independent noise draw), then there is a \emph{full-data marginalized
+  likelihood}
+\begin{eqnarray}\displaystyle
+P(D \given \beta, I) &=&
+  \prod_{i=1}^N P(f_i \given \beta, I)
+\quad ;
+\end{eqnarray}
+this is a product not a sum.  In the absence of a prior PDF on the
+hyper\-parameters---a \emph{hyperprior} if you will---the best choice of
+the hyper\-parameters $\beta$ is the set that maximizes this full-data
+marginalized likelihood.
+
+It is also possible, of course, to apply hyper\-priors and either
+maximize or sample from the marginalized posterior PDF $p(\beta \given
+D, I)$ for the hyper\-parameters.  But that's advanced!
+
+I conjecture that a prior obtained from the data by optimizing the
+full-data marginalized likelihood will outperform---by any prediction
+or test metrics---any prior obtained by any other methods, provided
+that it is given similar freedom.  In fact, I think there are theorems
+that more-or-less prove this.
+
+\end{document}
